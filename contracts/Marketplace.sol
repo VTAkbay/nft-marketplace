@@ -39,6 +39,20 @@ contract Marketplace {
         uint256 price
     );
 
+    address[] public allowedNftAddresses;
+
+    function getAllowedNftAddressesLength() public view returns (uint256) {
+        return allowedNftAddresses.length;
+    }
+
+    mapping(address => bool) public allowedNftAddressMap;
+
+    function allowNftAddress(address nftAddress) public onlyOwner {
+        require(!allowedNftAddressMap[nftAddress], "Already allowed address");
+        allowedNftAddressMap[nftAddress] = true;
+        allowedNftAddresses.push(nftAddress);
+    }
+
     mapping(uint256 => uint256) public listingIndices;
 
     struct Listing {
