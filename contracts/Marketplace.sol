@@ -66,6 +66,10 @@ contract Marketplace {
 
     Listing[] public listings;
 
+    function getListingsLength() public view returns (uint256) {
+        return listings.length;
+    }
+
     function market(
         address tokenAddress,
         uint256 tokenId,
