@@ -113,8 +113,8 @@ contract Marketplace {
             "Could not send X tokens"
         );
 
-        IERC721 token = IERC721(listing.tokenAddress);
-        token.safeTransferFrom(msg.sender, listing.seller, listing.tokenId);
+        IERC721 xNft = IERC721(listing.tokenAddress);
+        xNft.safeTransferFrom(listing.seller, msg.sender, listing.tokenId);
 
         Listing storage lastListing = listings[listings.length - 1];
         listingIndices[lastListing.id] = index;
