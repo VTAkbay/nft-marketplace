@@ -108,6 +108,7 @@ contract Marketplace {
     function buy(uint256 listingId) public {
         uint256 index = listingIndices[listingId];
         Listing storage listing = listings[index];
+        require(listing.id == listingId, "Invalid listing");
         require(
             xToken.transferFrom(msg.sender, listing.seller, listing.price),
             "Could not send X tokens"
