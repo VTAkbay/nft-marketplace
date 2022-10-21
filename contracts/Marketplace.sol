@@ -6,10 +6,21 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 pragma solidity ^0.8.4;
 
 contract Marketplace {
+    address public owner;
     IERC20 public xToken;
 
-    constructor(address xTokenAddress) {
-        xToken = IERC20(xTokenAddress);
+    constructor(address _xTokenAddress, address[] memory _allowedNftAddresses) {
+        owner = msg.sender;
+        xToken = IERC20(_xTokenAddress);
+
+        for (uint256 i = 0; i < _allowedNftAddresses.length; i++) {
+            allowNftAddress(_allowedNftAddresses[i]);
+        }
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can do that");
+        _;
     }
 
     event Market(
