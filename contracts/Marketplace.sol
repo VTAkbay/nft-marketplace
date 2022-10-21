@@ -62,7 +62,8 @@ contract Marketplace {
         address seller;
         uint256 price;
     }
-    uint256 private nextListingId;
+    // Starts from 1 to protect Invalid Listing require (default uint value 0)
+    uint256 private nextListingId = 1;
 
     Listing[] public listings;
 
