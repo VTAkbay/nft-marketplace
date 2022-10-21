@@ -75,6 +75,7 @@ contract Marketplace {
         uint256 tokenId,
         uint256 price
     ) public {
+        require(allowedNftAddressMap[tokenAddress], "Not allowed nft address");
         require(price != 0, "Cannot sell for nothing");
         uint256 listingId = nextListingId++;
         Listing memory listing = Listing(
