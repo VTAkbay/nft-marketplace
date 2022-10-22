@@ -20,7 +20,7 @@ async function main() {
 
   const safeMint1 = xNft.safeMint(
     "0x7292fe48e6685f5b6409963a34345C430EE4129b",
-    "Test"
+    "Test1"
   );
   (await safeMint1).wait;
   console.log("Minted 1");
@@ -51,7 +51,7 @@ async function main() {
   const market1 = marketplace.market(
     xNft.address,
     0,
-    ethers.utils.parseUnits("0.4", "ether")
+    ethers.utils.parseUnits("1", "ether")
   );
   (await market1).wait;
   console.log("Listed 1");
@@ -59,7 +59,7 @@ async function main() {
   const market2 = marketplace.market(
     xNft.address,
     1,
-    ethers.utils.parseUnits("0.2", "ether")
+    ethers.utils.parseUnits("2", "ether")
   );
   (await market2).wait;
   console.log("Listed 2");
@@ -67,7 +67,7 @@ async function main() {
   const market3 = marketplace.market(
     xNft.address,
     2,
-    ethers.utils.parseUnits("0.1", "ether")
+    ethers.utils.parseUnits("3", "ether")
   );
   (await market3).wait;
   console.log("Listed 3");
