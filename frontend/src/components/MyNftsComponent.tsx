@@ -53,6 +53,7 @@ export default function MyNftsComponent({
           {allowedAddresses &&
             allowedAddresses.map((address) => (
               <MyNftsByAddress
+                marketplaceAddress={marketplaceAddress}
                 contractAddress={address}
                 key={address}
               ></MyNftsByAddress>
