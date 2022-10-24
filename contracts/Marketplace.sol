@@ -55,6 +55,8 @@ contract Marketplace {
 
     mapping(uint256 => uint256) public listingIndices;
 
+    mapping(uint256 => bool) public listingTokenIds;
+
     struct Listing {
         uint256 id;
         address tokenAddress;
@@ -88,6 +90,9 @@ contract Marketplace {
         );
         listings.push(listing);
         listingIndices[listingId] = listings.length - 1;
+
+        listingTokenIds[tokenId] = true;
+
         emit Market(tokenAddress, tokenId, msg.sender, price);
     }
 
@@ -96,6 +101,8 @@ contract Marketplace {
         Listing storage listing = listings[index];
 
         require(listing.seller == msg.sender, "Only seller can cancel");
+
+        listingTokenIds[listing.tokenId] = false;
 
         Listing storage lastListing = listings[listings.length - 1];
         listingIndices[lastListing.id] = index;
@@ -117,6 +124,8 @@ contract Marketplace {
 
         IERC721 xNft = IERC721(listing.tokenAddress);
         xNft.safeTransferFrom(listing.seller, msg.sender, listing.tokenId);
+
+        listingTokenIds[listing.tokenId] = false;
 
         Listing storage lastListing = listings[listings.length - 1];
         listingIndices[lastListing.id] = index;
