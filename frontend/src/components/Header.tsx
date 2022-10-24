@@ -1,13 +1,8 @@
 import * as React from "react";
 
 import { BigNumber, ethers } from "ethers";
-import { headerPages, marketplaceAbi, xTokenAbi } from "../lib/utils";
-import {
-  useAccount,
-  useContractRead,
-  useContractWrite,
-  usePrepareContractWrite,
-} from "wagmi";
+import { headerPages, xTokenAbi } from "../lib/utils";
+import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 
 import AdbIcon from "@mui/icons-material/Adb";
 import AppBar from "@mui/material/AppBar";
@@ -21,6 +16,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import useGetBalance from "../hooks/useGetBalance";
+import useGetXTokenAddress from "../hooks/useGetXTokenAddress";
 import { useNavigate } from "react-router-dom";
 
 export default function Header({
@@ -30,23 +27,8 @@ export default function Header({
 }) {
   const { address } = useAccount();
   const navigate = useNavigate();
-
-  const { data: xTokenResult } = useContractRead({
-    addressOrName: marketplaceAddress,
-    contractInterface: marketplaceAbi,
-    functionName: "xToken",
-  });
-
-  const xTokenAddress = xTokenResult as string | undefined;
-
-  const { data: balance } = useContractRead({
-    addressOrName: xTokenAddress ? xTokenAddress : "",
-    contractInterface: xTokenAbi,
-    functionName: "balanceOf",
-    args: [address],
-    watch: true,
-    enabled: Boolean(xTokenAddress),
-  });
+  const { xTokenAddress } = useGetXTokenAddress(marketplaceAddress);
+  const { balance } = useGetBalance(xTokenAddress);
 
   const { config: faucetConfig } = usePrepareContractWrite({
     addressOrName: xTokenAddress ? xTokenAddress : "",
