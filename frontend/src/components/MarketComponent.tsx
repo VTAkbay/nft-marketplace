@@ -16,14 +16,8 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import {
-  erc721ABI,
-  useAccount,
-  useContractRead,
-  useContractReads,
-  useContractWrite,
-} from "wagmi";
-import { marketplaceAbi, xTokenAbi } from "../lib/utils";
+import { erc20ABI, useAccount, useContractWrite } from "wagmi";
+import { interfaces, marketplaceAbi } from "../lib/utils";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Link } from "react-router-dom";
@@ -31,21 +25,10 @@ import Loader from "../components/Loader";
 import { LoadingButton } from "@mui/lab";
 import React from "react";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-
-declare module interfaces {
-  export interface Listing {
-    id: number;
-    tokenAddress: string;
-    tokenId: number;
-    seller: string;
-    price: BigNumber;
-    tokenURI: string;
-  }
-  export interface Listings {
-    listings: Listing[];
-    total: number;
-  }
-}
+import useGetAllowance from "../hooks/useGetAllowance";
+import useGetBalance from "../hooks/useGetBalance";
+import useGetListings from "../hooks/useGetListings";
+import useGetXTokenAddress from "../hooks/useGetXTokenAddress";
 
 export default function MarketComponent({
   marketplaceAddress,
@@ -54,114 +37,31 @@ export default function MarketComponent({
 }) {
   const isMobile = useMediaQuery("(max-width:899px)");
   const { isConnected, isConnecting, isReconnecting, address } = useAccount();
-  const [loading, setLoading] = React.useState(true);
-  const [data, setData] = React.useState<interfaces.Listings>();
   const [buyNftListing, setBuyNftListing] =
     React.useState<interfaces.Listing>();
   const [buyingNft, setBuyingNft] = React.useState(false);
   const [givingAllowance, setGivingAllowance] = React.useState(false);
-  const [enabledRead, setEnabledRead] = React.useState(false);
 
-  React.useEffect(() => {
-    if (isConnected && !isConnecting && !isReconnecting && address) {
-      setEnabledRead(true);
-    }
-  }, [isConnected, isConnecting, isReconnecting, address]);
+  const { data: market, isLoading } = useGetListings(
+    marketplaceAddress,
+    isConnected,
+    isConnecting,
+    isReconnecting
+  );
 
-  const { data: xTokenResult } = useContractRead({
-    addressOrName: marketplaceAddress,
-    contractInterface: marketplaceAbi,
-    functionName: "xToken",
-  });
-
-  const xTokenAddress = xTokenResult as string | undefined;
-
-  const { data: balance } = useContractRead({
-    addressOrName: xTokenAddress ? xTokenAddress : "",
-    contractInterface: xTokenAbi,
-    functionName: "balanceOf",
-    args: [address],
-    watch: true,
-    enabled: Boolean(xTokenAddress),
-  });
-
-  const { data: listingsLengthResults } = useContractRead({
-    addressOrName: marketplaceAddress,
-    contractInterface: marketplaceAbi,
-    functionName: "getListingsLength",
-    watch: true,
-    enabled: enabledRead,
-  });
-
-  const listingsLength = Number(listingsLengthResults);
-
-  const { data: listings } = useContractReads({
-    contracts: listingsLength
-      ? Array(listingsLength)
-          .fill(0)
-          .map((i, index) => ({
-            addressOrName: marketplaceAddress,
-            contractInterface: marketplaceAbi,
-            functionName: "listings",
-            args: [index],
-          }))
-      : [],
-    watch: true,
-    allowFailure: true,
-    enabled: Boolean(listingsLength),
-  });
-
-  const { data: tokenURIsResult } = useContractReads({
-    contracts: listings
-      ? listings.map((listing) => ({
-          addressOrName: listing.tokenAddress,
-          contractInterface: erc721ABI,
-          functionName: "tokenURI",
-          args: [BigNumber.from(listing.tokenId)],
-        }))
-      : [],
-    watch: true,
-    allowFailure: true,
-    enabled: Boolean(listings),
-  });
-
-  const tokenURIs: string[] | undefined = tokenURIsResult as
-    | string[]
-    | undefined;
-
-  React.useEffect(() => {
-    if (listings && tokenURIs && !isConnecting && !isReconnecting) {
-      if (listings?.length === 0) {
-        setLoading(false);
-        return;
-      } else {
-        setData({
-          listings: listings?.map((listing, index) => ({
-            id: listing.id.toNumber(),
-            tokenAddress: listing.tokenAddress,
-            tokenId: listing.tokenId.toNumber(),
-            seller: listing.seller,
-            price: listing.price,
-            tokenURI: tokenURIs[index],
-          })),
-          total: listings.length,
-        });
-        setLoading(false);
-        return;
-      }
-    }
-  }, [address, isConnecting, isReconnecting, listings, tokenURIs]);
+  const { xTokenAddress } = useGetXTokenAddress(marketplaceAddress);
+  const { balance } = useGetBalance(xTokenAddress);
+  const { allowance } = useGetAllowance(xTokenAddress, marketplaceAddress);
 
   const buyNft = (listing: interfaces.Listing) => {
     setBuyNftListing(listing);
   };
 
-  const { writeAsync: buyNftWrite } = useContractWrite({
+  const { writeAsync: buyNftWriteAsync } = useContractWrite({
     mode: "recklesslyUnprepared",
     addressOrName: marketplaceAddress,
     contractInterface: marketplaceAbi,
     functionName: "buy",
-    args: [buyNftListing?.id],
     async onSettled(data, error) {
       if (data) {
         setBuyingNft(true);
@@ -175,28 +75,17 @@ export default function MarketComponent({
       }
 
       if (error?.name && error.message) {
-        // error handling
+        setBuyingNft(false);
+        setBuyNftListing(undefined);
       }
-
-      setBuyingNft(false);
-      setBuyNftListing(undefined);
     },
   });
 
-  const { data: allowance } = useContractRead({
-    addressOrName: xTokenAddress ? xTokenAddress : "",
-    contractInterface: xTokenAbi,
-    functionName: "allowance",
-    args: [address, marketplaceAddress],
-    watch: true,
-  });
-
-  const { writeAsync: approve } = useContractWrite({
+  const { writeAsync: approveWriteAsync } = useContractWrite({
     mode: "recklesslyUnprepared",
     addressOrName: xTokenAddress ? xTokenAddress : "",
-    contractInterface: xTokenAbi,
+    contractInterface: erc20ABI,
     functionName: "approve",
-    args: [marketplaceAddress, buyNftListing?.price],
     async onSettled(data, error) {
       if (data) {
         setGivingAllowance(true);
@@ -209,28 +98,49 @@ export default function MarketComponent({
       }
 
       if (error?.name && error.message) {
-        // error handling for add copy
+        setGivingAllowance(false);
       }
-
-      setGivingAllowance(false);
     },
   });
 
-  function nftBuy() {
-    try {
-      if (Number(allowance) >= Number(buyNftListing?.price)) {
-        buyNftWrite();
-      } else {
-        approve();
+  const nftBuy = async () => {
+    if (!(Number(allowance) >= Number(buyNftListing?.price))) {
+      await approveWriteAsync({
+        recklesslySetUnpreparedArgs: [marketplaceAddress, buyNftListing?.price],
+      });
+    }
+    await buyNftWriteAsync({
+      recklesslySetUnpreparedArgs: [buyNftListing?.id],
+    });
+  };
+
+  const { writeAsync: cancelMarketWrite } = useContractWrite({
+    mode: "recklesslyUnprepared",
+    addressOrName: marketplaceAddress,
+    contractInterface: marketplaceAbi,
+    functionName: "cancelMarket",
+    async onSettled(data, error) {
+      if (data) {
+        const transaction = await data?.wait();
+
+        if (transaction.confirmations >= 1) {
+        }
       }
-    } catch {}
+
+      if (error?.name && error.message) {
+      }
+    },
+  });
+
+  function cancelMarket(listingId: number) {
+    cancelMarketWrite({ recklesslySetUnpreparedArgs: [listingId] });
   }
 
   return (
     <>
-      {(isConnecting || isReconnecting || loading) && <Loader />}
+      {(isConnecting || isReconnecting || isLoading) && <Loader />}
 
-      {!isConnecting && !isReconnecting && !isConnected && !loading && (
+      {!isConnecting && !isReconnecting && !isConnected && !isLoading && (
         <Box display="flex" justifyContent="center" marginTop="2rem">
           <ConnectButton
             chainStatus="none"
@@ -242,7 +152,7 @@ export default function MarketComponent({
         </Box>
       )}
 
-      {!isConnecting && !isReconnecting && isConnected && !loading && (
+      {!isConnecting && !isReconnecting && isConnected && !isLoading && (
         <Container
           maxWidth="lg"
           sx={{
@@ -307,8 +217,8 @@ export default function MarketComponent({
             justifyContent="center"
             alignItems="center"
           >
-            {data && data.listings.length
-              ? data?.listings.map((listing) => {
+            {market && market.total !== 0
+              ? market?.listings.map((listing) => {
                   const priceInETH = ethers.utils.formatEther(
                     BigNumber.from(listing.price)
                   );
@@ -369,7 +279,9 @@ export default function MarketComponent({
                           ) : (
                             <Button
                               aria-label="cancel-listing"
-                              onClick={() => {}}
+                              onClick={() => {
+                                cancelMarket(listing.id);
+                              }}
                             >
                               Cancel Listing
                             </Button>
