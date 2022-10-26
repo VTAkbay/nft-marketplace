@@ -104,14 +104,15 @@ export default function MarketComponent({
   });
 
   const nftBuy = async () => {
-    if (!(Number(allowance) >= Number(buyNftListing?.price))) {
+    if (Number(allowance) >= Number(buyNftListing?.price)) {
+      await buyNftWriteAsync({
+        recklesslySetUnpreparedArgs: [buyNftListing?.id],
+      });
+    } else {
       await approveWriteAsync({
         recklesslySetUnpreparedArgs: [marketplaceAddress, buyNftListing?.price],
       });
     }
-    await buyNftWriteAsync({
-      recklesslySetUnpreparedArgs: [buyNftListing?.id],
-    });
   };
 
   const { writeAsync: cancelMarketWrite } = useContractWrite({
