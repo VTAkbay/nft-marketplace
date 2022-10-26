@@ -1,5 +1,5 @@
-import "./App.css";
 import "@rainbow-me/rainbowkit/styles.css";
+import "./App.css";
 
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { chains, ganacheChain } from "./lib/wagmi";
