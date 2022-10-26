@@ -12,6 +12,9 @@
     "build": "hardhat export-abi",
     "deploy": "npm run build && hardhat run scripts/deploy.ts",
     "deploy:ganache": "npm run deploy -- --network ganache",
-    "deploy:goerli": "npm run deploy -- --network goerli"
+    "deploy:goerli": "npm run deploy -- --network goerli",
+    "deploy:sepolia": "npm run deploy -- --network sepolia",
+    "verify:goerli": "hardhat verify --network goerli",
+    "verify:sepolia": "hardhat verify --network sepolia"
   }
 }
