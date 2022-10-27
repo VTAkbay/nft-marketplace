@@ -165,7 +165,9 @@ export default function MarketComponent({
           <Dialog
             open={Boolean(buyNftListing)}
             onClose={() => {
-              if (!buyingNft) setBuyNftListing(undefined);
+              if (!buyingNft && !givingAllowance) {
+                setBuyNftListing(undefined);
+              }
             }}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
@@ -185,7 +187,7 @@ export default function MarketComponent({
                   loading={buyingNft}
                   sx={{ color: "green" }}
                 >
-                  {!buyingNft ? "Buy" : "Buying the NFT, please wait!"}
+                  Buy
                 </LoadingButton>
               ) : (
                 <LoadingButton
@@ -195,17 +197,19 @@ export default function MarketComponent({
                   loading={givingAllowance}
                   sx={{ color: "green" }}
                 >
-                  {!givingAllowance ? "Give allowance" : "Please wait!"}
+                  Give allowance
                 </LoadingButton>
               )}
 
               <Button
                 onClick={() => {
-                  setBuyNftListing(undefined);
+                  if (!buyingNft && !givingAllowance) {
+                    setBuyNftListing(undefined);
+                  }
                 }}
                 variant="outlined"
                 autoFocus
-                disabled={buyingNft}
+                disabled={buyingNft || givingAllowance}
               >
                 Cancel
               </Button>
