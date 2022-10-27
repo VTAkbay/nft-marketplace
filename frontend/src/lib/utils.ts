@@ -8,6 +8,8 @@ export const headerPages = [{ key: 0, title: "My Nfts", route: "my-nfts" }];
 export const isDev =
   !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 
+export const devNetwork = process.env.REACT_APP_DEV_NETWORK;
+
 export function isZeroAddress(address: string | undefined) {
   if (!address) {
     return null;
