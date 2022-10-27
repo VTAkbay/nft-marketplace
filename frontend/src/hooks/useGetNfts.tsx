@@ -40,6 +40,7 @@ export default function useGetNfts(
     contracts: balanceOf
       ? Array(balanceOf.toNumber())
           .fill(0)
+          .filter((i) => i !== null)
           .map((i, index) => ({
             addressOrName: contractAddress,
             contractInterface: erc721ABI,
