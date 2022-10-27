@@ -8,7 +8,7 @@ export default function useGetXTokenAddress(marketplaceAddress: string) {
     functionName: "xToken",
   });
 
-  const xTokenAddress = xTokenResult as string | undefined;
+  const xTokenAddress: string | undefined = xTokenResult as string | undefined;
 
   return { xTokenAddress };
 }
