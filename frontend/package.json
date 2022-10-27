@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://vtakbay.github.io/xnft-marketplace",
+  "homepage": "https://vtakbay.github.io/nft-marketplace",
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
@@ -33,6 +33,9 @@
   },
   "scripts": {
     "start": "GENERATE_SOURCEMAP=false react-scripts start",
+    "start:ganache": "REACT_APP_DEV_NETWORK=ganache npm run start",
+    "start:goerli": "REACT_APP_DEV_NETWORK=goerli npm run start",
+    "start:sepolia": "REACT_APP_DEV_NETWORK=sepolia npm run start",
     "start-prod": "serve -s build",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "build-localhost": "PUBLIC_URL=/ npm run build",
