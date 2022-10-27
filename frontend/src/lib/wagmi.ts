@@ -1,7 +1,7 @@
 import { Chain, chain, configureChains, createClient } from "wagmi";
+import { devNetwork, isDev } from "./utils";
 
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
-import { isDev } from "./utils";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
 
@@ -20,8 +20,17 @@ export const ganacheChain: Chain = {
   testnet: true,
 };
 
+export const currentChain =
+  isDev && devNetwork === "ganache"
+    ? ganacheChain
+    : isDev && devNetwork === "goerli"
+    ? chain.goerli
+    : isDev && devNetwork === "sepolia"
+    ? chain.sepolia
+    : chain.mainnet;
+
 export const { chains, provider } = configureChains(
-  [isDev ? ganacheChain : chain.goerli],
+  [currentChain],
   [
     jsonRpcProvider({
       rpc: (chain) => {
