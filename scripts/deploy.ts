@@ -1,7 +1,15 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  //XToken
+  const accounts = await ethers.provider.listAccounts();
+  const chainId = (await ethers.provider.getNetwork()).chainId;
+
+  console.log("chainId: ", chainId);
+
+  const waitConfirmations = chainId === 1337 ? 0 : 6;
+
+  // XToken
+
   const XToken = await ethers.getContractFactory("XToken");
   const xToken = await XToken.deploy();
 
@@ -9,7 +17,7 @@ async function main() {
 
   console.log("xToken deployed to:", xToken.address);
 
-  //XNft
+  // XNft
 
   const XNft = await ethers.getContractFactory("XNft");
   const xNft = await XNft.deploy();
@@ -18,28 +26,13 @@ async function main() {
 
   console.log("xNft deployed to:", xNft.address);
 
-  const safeMint1 = xNft.safeMint(
-    "0x7292fe48e6685f5b6409963a34345C430EE4129b",
-    "Test1"
-  );
-  (await safeMint1).wait;
-  console.log("Minted 1");
+  // balanceOf
 
-  const safeMint2 = xNft.safeMint(
-    "0x7292fe48e6685f5b6409963a34345C430EE4129b",
-    "Test2"
-  );
-  (await safeMint2).wait;
-  console.log("Minted 2");
+  const balanceOf = await xNft.balanceOf(accounts[0]);
 
-  const safeMint3 = xNft.safeMint(
-    "0x7292fe48e6685f5b6409963a34345C430EE4129b",
-    "Test3"
-  );
-  (await safeMint3).wait;
-  console.log("Minted 3");
+  console.log("balance of", Number(balanceOf));
 
-  //Marketplace
+  // Marketplace
 
   const Marketplace = await ethers.getContractFactory("Marketplace");
   const marketplace = await Marketplace.deploy(xToken.address, [xNft.address]);
@@ -48,34 +41,14 @@ async function main() {
 
   console.log("Marketplace deployed to:", marketplace.address);
 
-  const market1 = marketplace.market(
-    xNft.address,
-    0,
-    ethers.utils.parseUnits("1", "ether")
-  );
-  (await market1).wait;
-  console.log("Listed 1");
+  // market1
+  (await xNft.approve(marketplace.address, 0)).wait(waitConfirmations);
 
-  const market2 = marketplace.market(
-    xNft.address,
-    1,
-    ethers.utils.parseUnits("2", "ether")
-  );
-  (await market2).wait;
-  console.log("Listed 2");
+  // market2
+  (await xNft.approve(marketplace.address, 1)).wait(waitConfirmations);
 
-  const market3 = marketplace.market(
-    xNft.address,
-    2,
-    ethers.utils.parseUnits("3", "ether")
-  );
-  (await market3).wait;
-  console.log("Listed 3");
-
-  // Allow marketplace to send NFT
-  (await xNft.approve(marketplace.address, 0)).wait;
-  (await xNft.approve(marketplace.address, 1)).wait;
-  (await xNft.approve(marketplace.address, 2)).wait;
+  // market3
+  (await xNft.approve(marketplace.address, 2)).wait(waitConfirmations);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
