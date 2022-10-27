@@ -1,8 +1,14 @@
 import * as React from "react";
 
 import { BigNumber, ethers } from "ethers";
+import {
+  chain,
+  useAccount,
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+} from "wagmi";
 import { headerPages, xTokenAbi } from "../lib/utils";
-import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 
 import AdbIcon from "@mui/icons-material/Adb";
 import AppBar from "@mui/material/AppBar";
@@ -16,6 +22,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { currentChain } from "../lib/wagmi";
 import useGetBalance from "../hooks/useGetBalance";
 import useGetXTokenAddress from "../hooks/useGetXTokenAddress";
 import { useNavigate } from "react-router-dom";
@@ -25,6 +32,7 @@ export default function Header({
 }: {
   marketplaceAddress: string;
 }) {
+  const { chain: useNetworkChain } = useNetwork();
   const { address } = useAccount();
   const navigate = useNavigate();
   const { xTokenAddress } = useGetXTokenAddress(marketplaceAddress);
@@ -154,7 +162,6 @@ export default function Header({
               </Button>
             ))}
           </Box>
-
           {address && (
             <Box
               sx={{
@@ -174,7 +181,6 @@ export default function Header({
               X
             </Box>
           )}
-
           <Box marginRight={2}>
             {address && (
               <Button
@@ -194,7 +200,6 @@ export default function Header({
               </Button>
             )}
           </Box>
-
           <Box sx={{ flexGrow: 0 }}>
             <ConnectButton
               chainStatus="none"
@@ -204,6 +209,9 @@ export default function Header({
               }}
             />
           </Box>
+          {chain && useNetworkChain?.name !== currentChain.name && (
+            <div>Change network to {currentChain.name}</div>
+          )}
         </Toolbar>
       </Container>
     </AppBar>
