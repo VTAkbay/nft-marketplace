@@ -209,7 +209,7 @@ export default function Header({
               }}
             />
           </Box>
-          {chain && useNetworkChain?.name !== currentChain.name && (
+          {chain && useNetworkChain?.name !== currentChain.name && address && (
             <div>Change network to {currentChain.name}</div>
           )}
         </Toolbar>
