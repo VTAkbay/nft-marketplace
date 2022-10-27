@@ -2,25 +2,32 @@ import "@rainbow-me/rainbowkit/styles.css";
 import "./App.css";
 
 import { HashRouter, Route, Routes } from "react-router-dom";
-import { chains, ganacheChain } from "./lib/wagmi";
+import { chains, currentChain } from "./lib/wagmi";
+import { useNetwork, useSwitchNetwork } from "wagmi";
 
 import Header from "./components/Header";
 import Market from "./pages/Market";
 import MyNfts from "./pages/MyNfts";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import React from "react";
-import { chain } from "wagmi";
-import { isDev } from "./lib/utils";
 
 function App() {
   const [marketplaceAddress, setMarketplaceAddress] = React.useState("");
+  const { chain: useNetworkChain } = useNetwork();
+  const { switchNetwork } = useSwitchNetwork();
+
+  React.useLayoutEffect(() => {
+    if (currentChain.name !== useNetworkChain?.name) {
+      switchNetwork?.(currentChain.id);
+    }
+  }, [useNetworkChain, switchNetwork]);
 
   return (
     <HashRouter>
       <RainbowKitProvider
         coolMode
         chains={chains}
-        initialChain={isDev ? ganacheChain : chain.goerli}
+        initialChain={currentChain}
         showRecentTransactions={true}
       >
         <Header marketplaceAddress={marketplaceAddress} />
