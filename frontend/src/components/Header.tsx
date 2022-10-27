@@ -1,14 +1,7 @@
 import * as React from "react";
 
 import { BigNumber, ethers } from "ethers";
-import {
-  chain,
-  useAccount,
-  useContractWrite,
-  useNetwork,
-  usePrepareContractWrite,
-} from "wagmi";
-import { headerPages, xTokenAbi } from "../lib/utils";
+import { chain, useAccount, useNetwork } from "wagmi";
 
 import AdbIcon from "@mui/icons-material/Adb";
 import AppBar from "@mui/material/AppBar";
@@ -17,12 +10,15 @@ import Button from "@mui/material/Button";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
+import { LoadingButton } from "@mui/lab";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { currentChain } from "../lib/wagmi";
+import { headerPages } from "../lib/utils";
+import useDebugFaucet from "../hooks/useDebugFaucet";
 import useGetBalance from "../hooks/useGetBalance";
 import useGetXTokenAddress from "../hooks/useGetXTokenAddress";
 import { useNavigate } from "react-router-dom";
@@ -37,13 +33,8 @@ export default function Header({
   const navigate = useNavigate();
   const { xTokenAddress } = useGetXTokenAddress(marketplaceAddress);
   const { balance } = useGetBalance(xTokenAddress);
-
-  const { config: faucetConfig } = usePrepareContractWrite({
-    addressOrName: xTokenAddress ? xTokenAddress : "",
-    contractInterface: xTokenAbi,
-    functionName: "debugFaucet",
-  });
-  const { write } = useContractWrite(faucetConfig);
+  const { debugFaucetWriteAsync, loadingFaucet } =
+    useDebugFaucet(marketplaceAddress);
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
@@ -183,7 +174,7 @@ export default function Header({
           )}
           <Box marginRight={2}>
             {address && (
-              <Button
+              <LoadingButton
                 color={"success"}
                 sx={{
                   backgroundColor: "white",
@@ -193,11 +184,12 @@ export default function Header({
                   },
                 }}
                 onClick={() => {
-                  write?.();
+                  debugFaucetWriteAsync?.();
                 }}
+                loading={loadingFaucet}
               >
                 Debug Faucet (10 X)
-              </Button>
+              </LoadingButton>
             )}
           </Box>
           <Box sx={{ flexGrow: 0 }}>
