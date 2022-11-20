@@ -6,12 +6,12 @@ export default function useGetBalance(tokenAddress: string | undefined) {
   const { address } = useAccount();
 
   const { data: balanceResult } = useContractRead({
-    addressOrName: tokenAddress ? tokenAddress : "",
-    contractInterface: erc20ABI,
+    address: tokenAddress ? tokenAddress : "",
+    abi: erc20ABI,
     functionName: "balanceOf",
-    args: [address],
+    args: [address!],
     watch: true,
-    enabled: Boolean(tokenAddress),
+    enabled: Boolean(tokenAddress && address),
   });
 
   const balance: BigNumber | undefined = balanceResult as BigNumber | undefined;

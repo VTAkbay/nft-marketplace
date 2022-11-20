@@ -33,7 +33,7 @@ import useGetXTokenAddress from "../hooks/useGetXTokenAddress";
 export default function MarketComponent({
   marketplaceAddress,
 }: {
-  marketplaceAddress: string;
+  marketplaceAddress: `0x${string}`;
 }) {
   const isMobile = useMediaQuery("(max-width:899px)");
   const { isConnected, isConnecting, isReconnecting, address } = useAccount();
@@ -59,8 +59,8 @@ export default function MarketComponent({
 
   const { writeAsync: buyNftWriteAsync } = useContractWrite({
     mode: "recklesslyUnprepared",
-    addressOrName: marketplaceAddress,
-    contractInterface: marketplaceAbi,
+    address: marketplaceAddress,
+    abi: marketplaceAbi,
     functionName: "buy",
     async onSettled(data, error) {
       if (data) {
@@ -83,8 +83,8 @@ export default function MarketComponent({
 
   const { writeAsync: approveWriteAsync } = useContractWrite({
     mode: "recklesslyUnprepared",
-    addressOrName: xTokenAddress ? xTokenAddress : "",
-    contractInterface: erc20ABI,
+    address: xTokenAddress ? xTokenAddress : "",
+    abi: erc20ABI,
     functionName: "approve",
     async onSettled(data, error) {
       if (data) {
@@ -105,20 +105,20 @@ export default function MarketComponent({
 
   const nftBuy = async () => {
     if (Number(allowance) >= Number(buyNftListing?.price)) {
-      await buyNftWriteAsync({
+      await buyNftWriteAsync?.({
         recklesslySetUnpreparedArgs: [buyNftListing?.id],
       });
     } else {
-      await approveWriteAsync({
-        recklesslySetUnpreparedArgs: [marketplaceAddress, buyNftListing?.price],
+      await approveWriteAsync?.({
+        recklesslySetUnpreparedArgs: [marketplaceAddress, buyNftListing!.price],
       });
     }
   };
 
   const { writeAsync: cancelMarketWrite } = useContractWrite({
     mode: "recklesslyUnprepared",
-    addressOrName: marketplaceAddress,
-    contractInterface: marketplaceAbi,
+    address: marketplaceAddress,
+    abi: marketplaceAbi,
     functionName: "cancelMarket",
     async onSettled(data, error) {
       if (data) {
@@ -134,7 +134,7 @@ export default function MarketComponent({
   });
 
   function cancelMarket(listingId: number) {
-    cancelMarketWrite({ recklesslySetUnpreparedArgs: [listingId] });
+    cancelMarketWrite?.({ recklesslySetUnpreparedArgs: [listingId] });
   }
 
   return (

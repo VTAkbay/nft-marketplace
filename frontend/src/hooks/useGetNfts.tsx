@@ -18,11 +18,12 @@ export default function useGetNfts(
   const [isLoading, setIsLoading] = React.useState(true);
 
   const { data: balanceOfResult } = useContractRead({
-    addressOrName: contractAddress,
-    contractInterface: erc721ABI,
+    address: contractAddress,
+    abi: erc721ABI,
     functionName: "balanceOf",
     watch: true,
-    args: [address],
+    enabled: Boolean(address),
+    args: [address!],
   });
 
   const balanceOf: BigNumber | undefined = balanceOfResult as
@@ -42,8 +43,8 @@ export default function useGetNfts(
           .fill(0)
           .filter((i) => i !== null)
           .map((i, index) => ({
-            addressOrName: contractAddress,
-            contractInterface: erc721ABI,
+            address: contractAddress,
+            abi: erc721ABI,
             functionName: "tokenOfOwnerByIndex",
             args: [address, index],
           }))
@@ -58,8 +59,8 @@ export default function useGetNfts(
   const { data: nftsResult } = useContractReads({
     contracts: nftIds
       ? nftIds.map((nftId) => ({
-          addressOrName: contractAddress,
-          contractInterface: erc721ABI,
+          address: contractAddress,
+          abi: erc721ABI,
           functionName: "tokenURI",
           args: [nftId],
         }))
@@ -70,8 +71,8 @@ export default function useGetNfts(
   const { data: listedNftIdsResult } = useContractReads({
     contracts: nftIds
       ? nftIds.map((nftId) => ({
-          addressOrName: marketplaceAddress,
-          contractInterface: marketplaceAbi,
+          address: marketplaceAddress,
+          abi: marketplaceAbi,
           functionName: "listingTokenIds",
           args: [Number(nftId)],
         }))
@@ -86,8 +87,8 @@ export default function useGetNfts(
   const { data: allowanceResult } = useContractReads({
     contracts: nftIds
       ? nftIds.map((nftId) => ({
-          addressOrName: contractAddress,
-          contractInterface: erc721ABI,
+          address: contractAddress,
+          abi: erc721ABI,
           functionName: "getApproved",
           args: [nftId],
         }))

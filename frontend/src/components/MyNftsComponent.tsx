@@ -7,11 +7,11 @@ import { marketplaceAbi } from "../lib/utils";
 export default function MyNftsComponent({
   marketplaceAddress,
 }: {
-  marketplaceAddress: string;
+  marketplaceAddress: `0x${string}`;
 }) {
   const { data: allowedAddressLength } = useContractRead({
-    addressOrName: marketplaceAddress,
-    contractInterface: marketplaceAbi,
+    address: marketplaceAddress,
+    abi: marketplaceAbi,
     functionName: "getAllowedNftAddressesLength",
     watch: true,
   });
@@ -21,8 +21,8 @@ export default function MyNftsComponent({
       ? Array(Number(allowedAddressLength))
           .fill(0)
           .map((i, index) => ({
-            addressOrName: marketplaceAddress,
-            contractInterface: marketplaceAbi,
+            address: marketplaceAddress,
+            abi: marketplaceAbi,
             functionName: "allowedNftAddresses",
             args: [index],
           }))
@@ -31,7 +31,7 @@ export default function MyNftsComponent({
     enabled: Boolean(allowedAddressLength),
   });
 
-  const allowedAddresses: string[] = allowedAddressesResult as [];
+  const allowedAddresses: `0x${string}`[] = allowedAddressesResult as [];
 
   return (
     <>

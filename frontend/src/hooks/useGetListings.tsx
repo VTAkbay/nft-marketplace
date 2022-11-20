@@ -21,8 +21,8 @@ export default function useGetListings(
   }, [isConnected]);
 
   const { data: listingsLengthResults } = useContractRead({
-    addressOrName: address,
-    contractInterface: marketplaceAbi,
+    address: address,
+    abi: marketplaceAbi,
     functionName: "getListingsLength",
     watch: true,
     enabled: Boolean(enabledRead && isConnected),
@@ -43,8 +43,8 @@ export default function useGetListings(
   const { data: listingsResult } = useContractReads({
     contracts: listingsLength
       ? new Array(listingsLength).fill(0).map((i, index) => ({
-          addressOrName: address,
-          contractInterface: marketplaceAbi,
+          address: address,
+          abi: marketplaceAbi,
           functionName: "listings",
           args: [index],
         }))
@@ -61,8 +61,8 @@ export default function useGetListings(
       ? listings
           .filter((listing) => listing !== null)
           .map((listing) => ({
-            addressOrName: listing.tokenAddress,
-            contractInterface: erc721ABI,
+            address: listing.tokenAddress,
+            abi: erc721ABI,
             functionName: "tokenURI",
             args: [BigNumber.from(listing.tokenId)],
           }))

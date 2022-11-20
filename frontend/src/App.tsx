@@ -30,7 +30,12 @@ function App() {
         initialChain={currentChain}
         showRecentTransactions={true}
       >
-        <Header marketplaceAddress={marketplaceAddress} />
+        {marketplaceAddress && (
+          <>
+            <Header marketplaceAddress={marketplaceAddress as `0x${string}`} />
+          </>
+        )}
+
         <Routes>
           <Route path=":contractAddress">
             <Route

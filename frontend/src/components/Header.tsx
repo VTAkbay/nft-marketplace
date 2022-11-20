@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
 export default function Header({
   marketplaceAddress,
 }: {
-  marketplaceAddress: string;
+  marketplaceAddress: `0x${string}`;
 }) {
   const { chain: useNetworkChain } = useNetwork();
   const { address } = useAccount();

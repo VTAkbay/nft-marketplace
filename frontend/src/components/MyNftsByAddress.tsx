@@ -36,8 +36,8 @@ export default function MyNftsByAddress({
   contractAddress,
   marketplaceAddress,
 }: {
-  contractAddress: string;
-  marketplaceAddress: string;
+  contractAddress: `0x${string}`;
+  marketplaceAddress: `0x${string}`;
 }) {
   const { data, isLoading } = useGetNfts(contractAddress, marketplaceAddress);
   const { isConnecting, isReconnecting } = useAccount();
@@ -64,8 +64,8 @@ export default function MyNftsByAddress({
   });
 
   const { writeAsync: marketWriteAsync } = useContractWrite({
-    addressOrName: marketplaceAddress,
-    contractInterface: marketplaceAbi,
+    address: marketplaceAddress,
+    abi: marketplaceAbi,
     mode: "recklesslyUnprepared",
     functionName: "market",
     async onSettled(data, error) {
@@ -95,8 +95,8 @@ export default function MyNftsByAddress({
 
   const { writeAsync: approveWriteAsync } = useContractWrite({
     mode: "recklesslyUnprepared",
-    addressOrName: contractAddress ? contractAddress : "",
-    contractInterface: erc721ABI,
+    address: contractAddress ? contractAddress : "",
+    abi: erc721ABI,
     functionName: "approve",
     async onSettled(data, error) {
       if (data) {
@@ -118,11 +118,14 @@ export default function MyNftsByAddress({
 
   const onSubmit = async (formData: interfaces.ListNftSubmitForm) => {
     if (isZeroAddress(listNft?.approvedBy)) {
-      approveWriteAsync({
-        recklesslySetUnpreparedArgs: [marketplaceAddress, listNft?.tokenId],
+      approveWriteAsync?.({
+        recklesslySetUnpreparedArgs: [
+          marketplaceAddress,
+          ethers.BigNumber.from(listNft!.tokenId),
+        ],
       });
     }
-    marketWriteAsync({
+    marketWriteAsync?.({
       recklesslySetUnpreparedArgs: [
         listNft?.tokenAddress,
         listNft?.tokenId,

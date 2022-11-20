@@ -21,7 +21,7 @@ export default function MyNfts({
     <>
       {address && (
         <MyNftsComponent
-          marketplaceAddress={contractAddress ?? ""}
+          marketplaceAddress={(contractAddress as `0x${string}`) ?? ""}
         ></MyNftsComponent>
       )}
       {!address && (

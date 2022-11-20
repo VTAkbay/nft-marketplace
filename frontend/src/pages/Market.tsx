@@ -16,7 +16,9 @@ export default function Market({
   return (
     <>
       {contractAddress && (
-        <MarketComponent marketplaceAddress={contractAddress} />
+        <MarketComponent
+          marketplaceAddress={contractAddress as `0x${string}`}
+        />
       )}
       {Boolean(contractAddress) || <>No Contract</>}
     </>

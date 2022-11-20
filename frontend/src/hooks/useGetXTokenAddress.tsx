@@ -1,14 +1,16 @@
 import { marketplaceAbi } from "../lib/utils";
 import { useContractRead } from "wagmi";
 
-export default function useGetXTokenAddress(marketplaceAddress: string) {
+export default function useGetXTokenAddress(marketplaceAddress: `0x${string}`) {
   const { data: xTokenResult } = useContractRead({
-    addressOrName: marketplaceAddress,
-    contractInterface: marketplaceAbi,
+    address: marketplaceAddress,
+    abi: marketplaceAbi,
     functionName: "xToken",
   });
 
-  const xTokenAddress: string | undefined = xTokenResult as string | undefined;
+  const xTokenAddress: `0x${string}` | undefined = xTokenResult as
+    | `0x${string}`
+    | undefined;
 
   return { xTokenAddress };
 }
