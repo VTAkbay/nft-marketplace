@@ -25,8 +25,10 @@ import { useNavigate } from "react-router-dom";
 
 export default function Header({
   marketplaceAddress,
+  setMarketplaceAddress,
 }: {
   marketplaceAddress: `0x${string}`;
+  setMarketplaceAddress: (adr: string) => void;
 }) {
   const { chain: useNetworkChain } = useNetwork();
   const { address } = useAccount();
@@ -59,7 +61,8 @@ export default function Header({
             noWrap
             component="a"
             onClick={() => {
-              navigate(`${marketplaceAddress}`);
+              setMarketplaceAddress("");
+              navigate("/");
             }}
             sx={{
               mr: 2,
@@ -108,7 +111,8 @@ export default function Header({
                   key={page.key}
                   onClick={() => {
                     handleCloseNavMenu();
-                    navigate(`${marketplaceAddress}/${page.route}`);
+                    setMarketplaceAddress("");
+                    navigate("/");
                   }}
                 >
                   <Typography textAlign="center">{page.title}</Typography>

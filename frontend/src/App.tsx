@@ -6,6 +6,7 @@ import { chains, currentChain } from "./lib/wagmi";
 import { useNetwork, useSwitchNetwork } from "wagmi";
 
 import Header from "./components/Header";
+import Home from "./pages/Home";
 import Market from "./pages/Market";
 import MyNfts from "./pages/MyNfts";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
@@ -32,14 +33,19 @@ function App() {
       >
         {marketplaceAddress && (
           <>
-            <Header marketplaceAddress={marketplaceAddress as `0x${string}`} />
+            <Header
+              setMarketplaceAddress={setMarketplaceAddress}
+              marketplaceAddress={marketplaceAddress as `0x${string}`}
+            />
           </>
         )}
 
         <Routes>
+          <Route path="/" element={<Home />}></Route>
+
           <Route path=":contractAddress">
             <Route
-              path=""
+              path="market/"
               element={<Market setMarketplaceAddress={setMarketplaceAddress} />}
             />
             <Route
