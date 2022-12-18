@@ -16,11 +16,6 @@ contract Marketplace {
         for (uint256 i = 0; i < _allowedNftAddresses.length; i++) {
             allowNftAddress(_allowedNftAddresses[i]);
         }
-
-        // List Test Nfts
-        market(_allowedNftAddresses[0], 0, 1 ether);
-        market(_allowedNftAddresses[0], 1, 2 ether);
-        market(_allowedNftAddresses[0], 2, 3 ether);
     }
 
     modifier onlyOwner() {

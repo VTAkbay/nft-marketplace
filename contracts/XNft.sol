@@ -19,12 +19,7 @@ contract XNft is
 
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("XNonFungibleToken", "XNft") {
-        // Mint Test Nfts
-        safeMint(msg.sender, "Test1");
-        safeMint(msg.sender, "Test2");
-        safeMint(msg.sender, "Test3");
-    }
+    constructor() ERC721("XNonFungibleToken", "XNft") {}
 
     function safeMint(address to, string memory uri) public onlyOwner {
         uint256 tokenId = _tokenIdCounter.current();
