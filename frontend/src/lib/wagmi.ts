@@ -1,8 +1,7 @@
-import { Chain, chain, configureChains, createClient } from "wagmi";
+import { Chain, configureChains, createClient, goerli, mainnet } from "wagmi";
 import { devNetwork, isDev } from "./utils";
 
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
 
 export const ganacheChain: Chain = {
@@ -15,7 +14,7 @@ export const ganacheChain: Chain = {
     symbol: "ETH",
   },
   rpcUrls: {
-    default: "HTTP://127.0.0.1:8545",
+    default: { http: ["HTTP://127.0.0.1:8545"] },
   },
   testnet: true,
 };
@@ -24,22 +23,12 @@ export const currentChain =
   isDev && devNetwork === "ganache"
     ? ganacheChain
     : isDev && devNetwork === "goerli"
-    ? chain.goerli
-    : isDev && devNetwork === "sepolia"
-    ? chain.sepolia
-    : chain.mainnet;
+    ? goerli
+    : mainnet;
 
 export const { chains, provider } = configureChains(
   [currentChain],
-  [
-    jsonRpcProvider({
-      rpc: (chain) => {
-        if (chain.id !== ganacheChain.id) return null;
-        return { http: chain.rpcUrls.default };
-      },
-    }),
-    publicProvider(),
-  ]
+  [publicProvider()]
 );
 
 export const { connectors } = getDefaultWallets({

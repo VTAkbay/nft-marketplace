@@ -1,10 +1,5 @@
-import {
-  erc721ABI,
-  useAccount,
-  useContractRead,
-  useContractReads,
-} from "wagmi";
-import { interfaces, marketplaceAbi } from "../lib/utils";
+import { interfaces, marketplaceAbi, xNftAbi } from "../lib/utils";
+import { useAccount, useContractRead, useContractReads } from "wagmi";
 
 import { BigNumber } from "ethers";
 import React from "react";
@@ -19,11 +14,12 @@ export default function useGetNfts(
 
   const { data: balanceOfResult } = useContractRead({
     address: contractAddress,
-    abi: erc721ABI,
+    abi: xNftAbi,
     functionName: "balanceOf",
     watch: true,
     enabled: Boolean(address),
     args: [address!],
+    cacheOnBlock: true,
   });
 
   const balanceOf: BigNumber | undefined = balanceOfResult as
@@ -44,12 +40,13 @@ export default function useGetNfts(
           .filter((i) => i !== null)
           .map((i, index) => ({
             address: contractAddress,
-            abi: erc721ABI,
+            abi: xNftAbi,
             functionName: "tokenOfOwnerByIndex",
             args: [address, index],
           }))
       : [],
     watch: true,
+    cacheOnBlock: true,
   });
 
   const nftIds: BigNumber[] | undefined = nftIdsResult as
@@ -60,7 +57,7 @@ export default function useGetNfts(
     contracts: nftIds
       ? nftIds.map((nftId) => ({
           address: contractAddress,
-          abi: erc721ABI,
+          abi: xNftAbi,
           functionName: "tokenURI",
           args: [nftId],
         }))
@@ -78,6 +75,7 @@ export default function useGetNfts(
         }))
       : [],
     watch: true,
+    cacheOnBlock: true,
   });
 
   const listedNftIds: boolean[] | undefined = listedNftIdsResult as
@@ -88,13 +86,14 @@ export default function useGetNfts(
     contracts: nftIds
       ? nftIds.map((nftId) => ({
           address: contractAddress,
-          abi: erc721ABI,
+          abi: xNftAbi,
           functionName: "getApproved",
           args: [nftId],
         }))
       : [],
     watch: true,
     enabled: Boolean(nftIds),
+    cacheOnBlock: true,
   });
 
   const allowance: string[] | undefined = allowanceResult as [] | undefined;

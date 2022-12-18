@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { BigNumber, ethers } from "ethers";
-import { chain, useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 import AdbIcon from "@mui/icons-material/Adb";
 import AppBar from "@mui/material/AppBar";
@@ -201,7 +201,7 @@ export default function Header({
               }}
             />
           </Box>
-          {chain && useNetworkChain?.name !== currentChain.name && address && (
+          {useNetworkChain?.name !== currentChain.name && address && (
             <div>Change network to {currentChain.name}</div>
           )}
         </Toolbar>
