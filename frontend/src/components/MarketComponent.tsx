@@ -1,6 +1,5 @@
 import { BigNumber, ethers } from "ethers";
 import {
-  Box,
   Button,
   Card,
   CardActionArea,
@@ -19,7 +18,6 @@ import {
 import { erc20ABI, useAccount, useContractWrite } from "wagmi";
 import { interfaces, marketplaceAbi } from "../lib/utils";
 
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Link } from "react-router-dom";
 import Loader from "../components/Loader";
 import { LoadingButton } from "@mui/lab";
@@ -141,19 +139,7 @@ export default function MarketComponent({
     <>
       {(isConnecting || isReconnecting || isLoading) && <Loader />}
 
-      {!isConnecting && !isReconnecting && !isConnected && !isLoading && (
-        <Box display="flex" justifyContent="center" marginTop="2rem">
-          <ConnectButton
-            chainStatus="none"
-            accountStatus={{
-              smallScreen: "avatar",
-              largeScreen: "full",
-            }}
-          />
-        </Box>
-      )}
-
-      {!isConnecting && !isReconnecting && isConnected && !isLoading && (
+      {!isConnecting && !isReconnecting && !isLoading && (
         <Container
           maxWidth="lg"
           sx={{
@@ -262,36 +248,38 @@ export default function MarketComponent({
                             </Typography>
                           </CardContent>
                         </CardActionArea>
-                        <CardActions>
-                          {listing.seller !== address ? (
-                            <IconButton
-                              disabled={
-                                Number(balance) <= Number(listing.price)
-                              }
-                              aria-label="buy-nft"
-                              onClick={() => {
-                                Number(balance) >= Number(listing.price) &&
-                                  buyNft(listing);
-                              }}
-                              color="success"
-                              size="large"
-                            >
-                              <ShoppingCartIcon />
-                              {Number(balance) >= Number(listing.price)
-                                ? "Buy"
-                                : "Not enough XToken"}
-                            </IconButton>
-                          ) : (
-                            <Button
-                              aria-label="cancel-listing"
-                              onClick={() => {
-                                cancelMarket(listing.id);
-                              }}
-                            >
-                              Cancel Listing
-                            </Button>
-                          )}
-                        </CardActions>
+                        {address && (
+                          <CardActions>
+                            {listing.seller !== address ? (
+                              <IconButton
+                                disabled={
+                                  Number(balance) <= Number(listing.price)
+                                }
+                                aria-label="buy-nft"
+                                onClick={() => {
+                                  Number(balance) >= Number(listing.price) &&
+                                    buyNft(listing);
+                                }}
+                                color="success"
+                                size="large"
+                              >
+                                <ShoppingCartIcon />
+                                {Number(balance) >= Number(listing.price)
+                                  ? "Buy"
+                                  : "Not enough XToken"}
+                              </IconButton>
+                            ) : (
+                              <Button
+                                aria-label="cancel-listing"
+                                onClick={() => {
+                                  cancelMarket(listing.id);
+                                }}
+                              >
+                                Cancel Listing
+                              </Button>
+                            )}
+                          </CardActions>
+                        )}
                       </Card>
                     </Grid>
                   );
