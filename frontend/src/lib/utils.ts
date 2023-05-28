@@ -1,8 +1,16 @@
 import { BigNumber } from "ethers";
+import Marketplace from "../artifacts/Marketplace.json";
+import XNft from "../artifacts/XNft.json";
+import XToken from "../artifacts/XToken.json";
 
-export { default as marketplaceAbi } from "../abi/contracts/Marketplace.sol/Marketplace.json";
-export { default as xTokenAbi } from "../abi/contracts/XToken.sol/XToken.json";
-export { default as xNftAbi } from "../abi/contracts/XNft.sol/XNft.json";
+export const marketplaceByteCode = Marketplace.bytecode;
+export const marketplaceAbi = Marketplace.abi;
+
+export const xTokenByteCode = XToken.bytecode;
+export const xTokenAbi = XToken.abi;
+
+export const xNftByteCode = XNft.bytecode;
+export const xNftAbi = XNft.abi;
 
 export const headerPages = [
   { key: 1, title: "Market", route: "market" },

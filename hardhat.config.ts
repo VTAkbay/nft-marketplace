@@ -1,5 +1,4 @@
 import "@nomicfoundation/hardhat-toolbox";
-import "hardhat-abi-exporter";
 import "hardhat-gas-reporter";
 
 import { HardhatUserConfig } from "hardhat/config";
@@ -63,9 +62,6 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: ETHERSCAN_API_KEY,
-  },
-  abiExporter: {
-    path: "frontend/src/abi",
   },
   gasReporter: {
     enabled: REPORT_GAS === "true" ? true : false,
